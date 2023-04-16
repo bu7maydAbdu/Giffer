@@ -8,6 +8,7 @@ function App() {
   const [ready, setReady] = useState(false)
   const [video, setVideo] = useState()
   const [gif , setGif] = useState()
+  const [gifReady, setGifReady] = useState(false);
 
   const load = async () => {
     await ffmpeg.load()
@@ -22,19 +23,19 @@ function App() {
 
   const convertToGif = async ()=>{
     ffmpeg.FS("writeFile", "test.mp4", await fetchFile(video))
-    await ffmpeg.run("-i", "test.mp4", "-t", "15.5", "-ss" , "2.0" , "-f", "gif" , "out.gif")
+    await ffmpeg.run("-i", "test.mp4", "-t", "2.5", "-ss" , "2.0" , "-f", "gif" , "out.gif")
 
     const data = ffmpeg.FS("readFile" , "out.gif")
 
-    const url = URL.createObjectURL(new Blob([data.buffer], {type : "image/gif"}))
-    setGif(url)
-    
+    const url = URL.createObjectURL(new Blob([data.buffer], {type : "image/gif"}));
+    setGif(url);
+    setGifReady(true);
   }
   return ready ?(
     <div className="App">
     { video && <video
       controls
-      width="500"
+      width="250"
       src={URL.createObjectURL(video)}
         >
 
@@ -43,13 +44,19 @@ function App() {
 
     }
 
-
     <input type="file"  onChange={(e) => setVideo(e.target.files?.item(0))}/>
     <button onClick={convertToGif}>Convert</button>
-    {gif && <img src={gif} width="500" />}
-   {gif && <button  id="downloadbtn" >download</button>}
+    {gif && <img src={gif} width="250" />}
+    {gifReady && (
+      <button onClick={() => {
+        const a = document.createElement('a');
+        a.href = gif;
+        a.download = 'output.gif';
+        a.click();
+      }}>Download GIF</button>
+    )}
     </div>
-  ) : 
+  ) :
   (<p>loading...</p>)
 }
 
