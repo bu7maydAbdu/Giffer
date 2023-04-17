@@ -31,6 +31,13 @@ function App() {
     setGif(url);
     setGifReady(true);
   }
+
+  const downloadGif = () => {
+    const a = document.createElement('a');
+    a.href = gif;
+    a.download = 'output.gif';
+    a.click();
+  }
   return ready ?(
     <div className="App">
     { video && <video
@@ -48,12 +55,7 @@ function App() {
     <button onClick={convertToGif}>Convert</button>
     {gif && <img src={gif} width="250" />}
     {gifReady && (
-      <button onClick={() => {
-        const a = document.createElement('a');
-        a.href = gif;
-        a.download = 'output.gif';
-        a.click();
-      }}>Download GIF</button>
+      <button onClick={downloadGif}>Download GIF</button>
     )}
     </div>
   ) :
